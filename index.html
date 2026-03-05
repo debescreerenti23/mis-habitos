@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Diario de Hábitos</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f9; padding: 20px; display: flex; justify-content: center; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h1 { color: #333; font-size: 1.2rem; margin-bottom: 5px; }
+        #fecha { color: #666; margin-bottom: 20px; font-weight: bold; }
+        .tarea { display: flex; align-items: center; margin-bottom: 15px; font-size: 1.1rem; }
+        input[type="checkbox"] { width: 25px; height: 25px; margin-right: 15px; cursor: pointer; }
+        .completada { text-decoration: line-through; color: #aaa; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1 id="fecha"></h1>
+    <div id="lista-tareas">
+        </div>
+</div>
+
+<script>
+    // 1. Definimos tus tareas fijas
+    const misHabitos = ["Ejercicio 🏋️", "Lectura 📚", "Aprender JavaScript 💻", "Tarea Importante ⭐"];
+    
+    // 2. Mostrar la fecha actual
+    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const hoy = new Date().toLocaleDateString('es-ES', opciones);
+    document.getElementById('fecha').innerText = hoy;
+
+    const listaDiv = document.getElementById('lista-tareas');
+
+    // 3. Función para cargar y mostrar tareas
+    function cargarTareas() {
+        const guardado = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
+        const fechaKey = new Date().toDateString(); // Usamos la fecha como "llave"
+
+        // Si es un día nuevo, podrías resetear, pero aquí mantendremos el estado del día actual
+        misHabitos.forEach((tarea, index) => {
+            const div = document.createElement('div');
+            div.className = 'tarea';
+            
+            const check = document.createElement('input');
+            check.type = 'checkbox';
+            // Verificamos si ya estaba marcado hoy
+            if (guardado[fechaKey] && guardado[fechaKey][index]) {
+                check.checked = true;
+                div.classList.add('completada');
+            }
+
+            check.onchange = () => {
+                div.classList.toggle('completada');
+                guardarProgreso(fechaKey, index, check.checked);
+            };
+
+            const label = document.createElement('span');
+            label.innerText = tarea;
+
+            div.appendChild(check);
+            div.appendChild(label);
+            listaDiv.appendChild(div);
+        });
+    }
+
+    // 4. Guardar en la memoria del móvil
+    function guardarProgreso(fecha, index, estado) {
+        let datos = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
+        if (!datos[fecha]) datos[fecha] = {};
+        datos[fecha][index] = estado;
+        localStorage.setItem('progresoHabitos', JSON.stringify(datos));
+    }
+
+    cargarTareas();
+</script>
+
+</body>
+</html>
