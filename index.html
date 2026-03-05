@@ -4,41 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Diario de Hábitos</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✅</text></svg>">
+    <meta name="theme-color" id="meta-theme" content="#28a745">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
-        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
-        h1 { color: #1a1a1a; font-size: 1.4rem; margin-bottom: 5px; }
-        #fecha { color: #666; margin-bottom: 15px; font-size: 0.9rem; display: block; }
+        /* Variables de color para facilitar el cambio */
+        :root {
+            --bg-body: #f0f2f5;
+            --bg-card: #ffffff;
+            --text-main: #1a1a1a;
+            --text-sec: #666;
+            --bg-tarea: #fafafa;
+            --border: #eee;
+        }
 
-        /* Estilos de la Barra de Progreso */
-        .progreso-container { background: #eee; border-radius: 10px; height: 10px; margin-bottom: 20px; overflow: hidden; }
+        /* Colores del Modo Oscuro */
+        [data-theme="dark"] {
+            --bg-body: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #ffffff;
+            --text-sec: #b0b0b0;
+            --bg-tarea: #2d2d2d;
+            --border: #333;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); padding: 20px; display: flex; justify-content: center; transition: 0.3s; }
+        .card { background: var(--bg-card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 100%; max-width: 400px; position: relative; }
+        
+        h1 { color: var(--text-main); font-size: 1.4rem; margin-bottom: 5px; }
+        #fecha { color: var(--text-sec); margin-bottom: 15px; font-size: 0.9rem; display: block; }
+
+        /* Botón Modo Oscuro */
+        .btn-dark-mode { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 5px; }
+
+        .stats { display: flex; gap: 10px; margin-bottom: 20px; }
+        .stat-box { background: rgba(255, 152, 0, 0.1); padding: 10px; border-radius: 12px; flex: 1; text-align: center; border: 1px solid rgba(255, 152, 0, 0.3); }
+        .stat-number { display: block; font-size: 1.2rem; font-weight: bold; color: #ff9800; }
+        .stat-label { font-size: 0.7rem; color: #ff9800; text-transform: uppercase; }
+
+        .progreso-container { background: var(--border); border-radius: 10px; height: 10px; margin-bottom: 20px; overflow: hidden; }
         #barra-progreso { background: #28a745; width: 0%; height: 100%; transition: width 0.4s ease; }
         #texto-progreso { font-size: 0.8rem; color: #28a745; font-weight: bold; margin-bottom: 10px; display: block; }
         
         .input-group { display: flex; gap: 10px; margin-bottom: 25px; }
-        input[type="text"] { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid #eee; outline: none; }
+        input[type="text"] { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid var(--border); outline: none; background: var(--bg-card); color: var(--text-main); }
         
-        button { padding: 10px 18px; background: #28a745; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        
-        .tarea { display: flex; flex-direction: column; margin-bottom: 15px; background: #fafafa; padding: 12px; border-radius: 10px; }
+        .tarea { display: flex; flex-direction: column; margin-bottom: 15px; background: var(--bg-tarea); padding: 12px; border-radius: 10px; }
         .tarea-header { display: flex; align-items: center; width: 100%; }
         input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; accent-color: #28a745; }
-        .texto-tarea { flex: 1; font-size: 1rem; color: #333; }
-        .completada .texto-tarea { text-decoration: line-through; color: #aaa; }
+        .texto-tarea { flex: 1; font-size: 1rem; color: var(--text-main); }
+        .completada .texto-tarea { text-decoration: line-through; color: var(--text-sec); opacity: 0.6; }
 
-        /* Input para el detalle del ejercicio */
-        .detalle-ejercicio { margin-top: 10px; margin-left: 37px; padding: 8px; border-radius: 5px; border: 1px solid #ddd; font-size: 0.9rem; }
-
-        .btn-eliminar { background: none; color: #ff4757; padding: 5px; font-size: 1.1rem; opacity: 0.6; }
-        .btn-reiniciar { background: #ff4757; margin-top: 20px; width: 100%; padding: 12px; }
+        .detalle-ejercicio { margin-top: 10px; margin-left: 37px; padding: 8px; border-radius: 5px; border: 1px solid var(--border); font-size: 0.8rem; background: var(--bg-body); color: var(--text-main); }
+        .btn-eliminar { background: none; color: #ff4757; padding: 5px; font-size: 1.1rem; border: none; }
+        .btn-reiniciar { background: #ff4757; margin-top: 20px; width: 100%; padding: 12px; color: white; border-radius: 10px; border: none; font-size: 0.8rem; opacity: 0.7; }
     </style>
 </head>
-<body>
+<body data-theme="light">
 
 <div class="card">
-    <h1>Mi rutina diaria 🏃​📖​💻​🍌🧘🏻​</h1>
+    <button class="btn-dark-mode" onclick="toggleDarkMode()" id="dark-icon">🌙</button>
+    <h1>Mi Día</h1>
     <span id="fecha"></span>
+
+    <div class="stats">
+        <div class="stat-box">
+            <span class="stat-number" id="racha-dias">0</span>
+            <span class="stat-label">🔥 Racha</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-number" id="total-completados">0</span>
+            <span class="stat-label">🏆 Total</span>
+        </div>
+    </div>
 
     <span id="texto-progreso">Progreso: 0%</span>
     <div class="progreso-container">
@@ -47,37 +84,51 @@
 
     <div class="input-group">
         <input type="text" id="nueva-tarea" placeholder="Nuevo hábito...">
-        <button onclick="agregarTareaManual()">+</button>
+        <button onclick="agregarTareaManual()" style="background: #28a745; color: white; border: none; border-radius: 10px; padding: 10px 18px; font-weight: bold;">+</button>
     </div>
 
     <div id="lista-tareas"></div>
 
-    <button class="btn-reiniciar" onclick="borrarTodo()">Reiniciar Todo</button>
+    <button class="btn-reiniciar" onclick="borrarTodo()">Reiniciar Datos</button>
 </div>
 
 <script>
     let misHabitos = JSON.parse(localStorage.getItem('misHabitosLista')) || ["Ejercicio 🏋️", "Lectura 📚", "JavaScript 💻"];
     
+    // Lógica Modo Oscuro
+    function toggleDarkMode() {
+        const body = document.body;
+        const currentTheme = body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        
+        body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        document.getElementById('dark-icon').innerText = newTheme === 'light' ? '🌙' : '☀️';
+        document.getElementById('meta-theme').setAttribute('content', newTheme === 'light' ? '#28a745' : '#1e1e1e');
+    }
+
+    // Cargar tema guardado al iniciar
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.setAttribute('data-theme', savedTheme);
+    document.getElementById('dark-icon').innerText = savedTheme === 'light' ? '🌙' : '☀️';
+
     const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
     document.getElementById('fecha').innerText = new Date().toLocaleDateString('es-ES', opciones);
 
     function cargarTareas() {
         const listaDiv = document.getElementById('lista-tareas');
         listaDiv.innerHTML = "";
-        
         const guardado = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
         const fechaKey = new Date().toDateString();
 
         misHabitos.forEach((tarea, index) => {
             const div = document.createElement('div');
             div.className = 'tarea';
-            
             const header = document.createElement('div');
             header.className = 'tarea-header';
 
             const check = document.createElement('input');
             check.type = 'checkbox';
-            
             if (guardado[fechaKey] && guardado[fechaKey][tarea]) {
                 check.checked = true;
                 div.classList.add('completada');
@@ -103,24 +154,19 @@
             header.appendChild(btnEliminar);
             div.appendChild(header);
 
-            // --- LÓGICA PARA EL INPUT DE EJERCICIO ---
             if (tarea.toLowerCase().includes("ejercicio")) {
                 const inputDetalle = document.createElement('input');
                 inputDetalle.type = "text";
                 inputDetalle.className = "detalle-ejercicio";
                 inputDetalle.placeholder = "¿Qué has hecho hoy?";
-                // Cargar detalle guardado
                 inputDetalle.value = guardado[fechaKey + "_detalle_" + tarea] || "";
-                
-                inputDetalle.oninput = () => {
-                    guardarDetalle(fechaKey + "_detalle_" + tarea, inputDetalle.value);
-                };
+                inputDetalle.oninput = () => { guardarDetalle(fechaKey + "_detalle_" + tarea, inputDetalle.value); };
                 div.appendChild(inputDetalle);
             }
-
             listaDiv.appendChild(div);
         });
         actualizarBarra();
+        calcularRacha();
     }
 
     function actualizarBarra() {
@@ -128,9 +174,33 @@
         const marcados = Array.from(checks).filter(c => c.checked).length;
         const total = checks.length;
         const porcentaje = total === 0 ? 0 : Math.round((marcados / total) * 100);
-        
         document.getElementById('barra-progreso').style.width = porcentaje + "%";
         document.getElementById('texto-progreso').innerText = `Progreso: ${porcentaje}% (${marcados}/${total})`;
+    }
+
+    function calcularRacha() {
+        const guardado = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
+        let racha = 0;
+        let totalLogs = 0;
+        let fechaBusqueda = new Date();
+
+        Object.keys(guardado).forEach(key => {
+            if (!key.includes("_detalle_")) {
+                const tareasDia = Object.values(guardado[key]);
+                if (tareasDia.length >= misHabitos.length && tareasDia.every(v => v === true)) totalLogs++;
+            }
+        });
+
+        while (true) {
+            const key = fechaBusqueda.toDateString();
+            const dia = guardado[key];
+            if (dia && Object.values(dia).filter(v => v === true).length >= misHabitos.length) {
+                racha++;
+                fechaBusqueda.setDate(fechaBusqueda.getDate() - 1);
+            } else break;
+        }
+        document.getElementById('racha-dias').innerText = racha;
+        document.getElementById('total-completados').innerText = totalLogs;
     }
 
     function guardarProgreso(fecha, nombreTarea, estado) {
@@ -138,6 +208,7 @@
         if (!datos[fecha]) datos[fecha] = {};
         datos[fecha][nombreTarea] = estado;
         localStorage.setItem('progresoHabitos', JSON.stringify(datos));
+        calcularRacha();
     }
 
     function guardarDetalle(id, texto) {
