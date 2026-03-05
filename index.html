@@ -57,6 +57,20 @@
         .detalle-ejercicio { margin-top: 10px; margin-left: 37px; padding: 8px; border-radius: 5px; border: 1px solid var(--border); font-size: 0.8rem; background: var(--bg-body); color: var(--text-main); }
         .btn-eliminar { background: none; color: #ff4757; padding: 5px; font-size: 1.1rem; border: none; }
         .btn-reiniciar { background: #ff4757; margin-top: 20px; width: 100%; padding: 12px; color: white; border-radius: 10px; border: none; font-size: 0.8rem; opacity: 0.7; }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            opacity: 0.7;
+        }
+
+        /* Un pequeño detalle para el enlace si decides ponerlo algún día */
+        footer a {
+            color: var(--text-sec);
+            text-decoration: none;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -92,7 +106,16 @@
     <button class="btn-reiniciar" onclick="borrarTodo()">Reiniciar Datos</button>
 </div>
 
+<button class="btn-reiniciar" onclick="borrarTodo()">Reiniciar Datos</button>
+</div> 
+<footer>
+    javilindj - All Rights Reserved &copy; <span id="year"></span>
+</footer>
+
 <script>
+
+    document.getElementById('year').innerText = new Date().getFullYear();
+
     let misHabitos = JSON.parse(localStorage.getItem('misHabitosLista')) || ["Ejercicio 🏋️", "Lectura 📚", "JavaScript 💻"];
     
     // Lógica Modo Oscuro
