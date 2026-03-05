@@ -5,72 +5,168 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Diario de Hábitos</title>
     <style>
-        body { font-family: sans-serif; background: #f4f4f9; padding: 20px; display: flex; justify-content: center; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h1 { color: #333; font-size: 1.2rem; margin-bottom: 5px; }
-        #fecha { color: #666; margin-bottom: 20px; font-weight: bold; }
-        .tarea { display: flex; align-items: center; margin-bottom: 15px; font-size: 1.1rem; }
-        input[type="checkbox"] { width: 25px; height: 25px; margin-right: 15px; cursor: pointer; }
-        .completada { text-decoration: line-through; color: #aaa; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 400px; }
+        h1 { color: #1a1a1a; font-size: 1.4rem; margin-bottom: 5px; }
+        #fecha { color: #666; margin-bottom: 15px; font-size: 0.9rem; display: block; }
+
+        /* Estilos de la Barra de Progreso */
+        .progreso-container { background: #eee; border-radius: 10px; height: 10px; margin-bottom: 20px; overflow: hidden; }
+        #barra-progreso { background: #28a745; width: 0%; height: 100%; transition: width 0.4s ease; }
+        #texto-progreso { font-size: 0.8rem; color: #28a745; font-weight: bold; margin-bottom: 10px; display: block; }
+        
+        .input-group { display: flex; gap: 10px; margin-bottom: 25px; }
+        input[type="text"] { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid #eee; outline: none; }
+        
+        button { padding: 10px 18px; background: #28a745; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        
+        .tarea { display: flex; flex-direction: column; margin-bottom: 15px; background: #fafafa; padding: 12px; border-radius: 10px; }
+        .tarea-header { display: flex; align-items: center; width: 100%; }
+        input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; accent-color: #28a745; }
+        .texto-tarea { flex: 1; font-size: 1rem; color: #333; }
+        .completada .texto-tarea { text-decoration: line-through; color: #aaa; }
+
+        /* Input para el detalle del ejercicio */
+        .detalle-ejercicio { margin-top: 10px; margin-left: 37px; padding: 8px; border-radius: 5px; border: 1px solid #ddd; font-size: 0.9rem; }
+
+        .btn-eliminar { background: none; color: #ff4757; padding: 5px; font-size: 1.1rem; opacity: 0.6; }
+        .btn-reiniciar { background: #ff4757; margin-top: 20px; width: 100%; padding: 12px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1 id="fecha"></h1>
-    <div id="lista-tareas">
-        </div>
+    <h1>Mi Día</h1>
+    <span id="fecha"></span>
+
+    <span id="texto-progreso">Progreso: 0%</span>
+    <div class="progreso-container">
+        <div id="barra-progreso"></div>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="nueva-tarea" placeholder="Nuevo hábito...">
+        <button onclick="agregarTareaManual()">+</button>
+    </div>
+
+    <div id="lista-tareas"></div>
+
+    <button class="btn-reiniciar" onclick="borrarTodo()">Reiniciar Todo</button>
 </div>
 
 <script>
-    // 1. Definimos tus tareas fijas
-    const misHabitos = ["Ejercicio 🏋️", "Lectura 📚", "Aprender JavaScript 💻", "Tarea Importante ⭐"];
+    let misHabitos = JSON.parse(localStorage.getItem('misHabitosLista')) || ["Ejercicio 🏋️", "Lectura 📚", "JavaScript 💻"];
     
-    // 2. Mostrar la fecha actual
-    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const hoy = new Date().toLocaleDateString('es-ES', opciones);
-    document.getElementById('fecha').innerText = hoy;
+    const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
+    document.getElementById('fecha').innerText = new Date().toLocaleDateString('es-ES', opciones);
 
-    const listaDiv = document.getElementById('lista-tareas');
-
-    // 3. Función para cargar y mostrar tareas
     function cargarTareas() {
+        const listaDiv = document.getElementById('lista-tareas');
+        listaDiv.innerHTML = "";
+        
         const guardado = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
-        const fechaKey = new Date().toDateString(); // Usamos la fecha como "llave"
+        const fechaKey = new Date().toDateString();
 
-        // Si es un día nuevo, podrías resetear, pero aquí mantendremos el estado del día actual
         misHabitos.forEach((tarea, index) => {
             const div = document.createElement('div');
             div.className = 'tarea';
             
+            const header = document.createElement('div');
+            header.className = 'tarea-header';
+
             const check = document.createElement('input');
             check.type = 'checkbox';
-            // Verificamos si ya estaba marcado hoy
-            if (guardado[fechaKey] && guardado[fechaKey][index]) {
+            
+            if (guardado[fechaKey] && guardado[fechaKey][tarea]) {
                 check.checked = true;
                 div.classList.add('completada');
             }
 
             check.onchange = () => {
                 div.classList.toggle('completada');
-                guardarProgreso(fechaKey, index, check.checked);
+                guardarProgreso(fechaKey, tarea, check.checked);
+                actualizarBarra();
             };
 
-            const label = document.createElement('span');
-            label.innerText = tarea;
+            const span = document.createElement('span');
+            span.className = 'texto-tarea';
+            span.innerText = tarea;
 
-            div.appendChild(check);
-            div.appendChild(label);
+            const btnEliminar = document.createElement('button');
+            btnEliminar.innerText = "×";
+            btnEliminar.className = "btn-eliminar";
+            btnEliminar.onclick = () => { eliminarTarea(index); };
+
+            header.appendChild(check);
+            header.appendChild(span);
+            header.appendChild(btnEliminar);
+            div.appendChild(header);
+
+            // --- LÓGICA PARA EL INPUT DE EJERCICIO ---
+            if (tarea.toLowerCase().includes("ejercicio")) {
+                const inputDetalle = document.createElement('input');
+                inputDetalle.type = "text";
+                inputDetalle.className = "detalle-ejercicio";
+                inputDetalle.placeholder = "¿Qué has hecho hoy?";
+                // Cargar detalle guardado
+                inputDetalle.value = guardado[fechaKey + "_detalle_" + tarea] || "";
+                
+                inputDetalle.oninput = () => {
+                    guardarDetalle(fechaKey + "_detalle_" + tarea, inputDetalle.value);
+                };
+                div.appendChild(inputDetalle);
+            }
+
             listaDiv.appendChild(div);
         });
+        actualizarBarra();
     }
 
-    // 4. Guardar en la memoria del móvil
-    function guardarProgreso(fecha, index, estado) {
+    function actualizarBarra() {
+        const checks = document.querySelectorAll('input[type="checkbox"]');
+        const marcados = Array.from(checks).filter(c => c.checked).length;
+        const total = checks.length;
+        const porcentaje = total === 0 ? 0 : Math.round((marcados / total) * 100);
+        
+        document.getElementById('barra-progreso').style.width = porcentaje + "%";
+        document.getElementById('texto-progreso').innerText = `Progreso: ${porcentaje}% (${marcados}/${total})`;
+    }
+
+    function guardarProgreso(fecha, nombreTarea, estado) {
         let datos = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
         if (!datos[fecha]) datos[fecha] = {};
-        datos[fecha][index] = estado;
+        datos[fecha][nombreTarea] = estado;
         localStorage.setItem('progresoHabitos', JSON.stringify(datos));
+    }
+
+    function guardarDetalle(id, texto) {
+        let datos = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
+        datos[id] = texto;
+        localStorage.setItem('progresoHabitos', JSON.stringify(datos));
+    }
+
+    function eliminarTarea(index) {
+        misHabitos.splice(index, 1);
+        localStorage.setItem('misHabitosLista', JSON.stringify(misHabitos));
+        cargarTareas();
+    }
+
+    function agregarTareaManual() {
+        const input = document.getElementById('nueva-tarea');
+        const texto = input.value.trim();
+        if (texto !== "") {
+            misHabitos.push(texto);
+            localStorage.setItem('misHabitosLista', JSON.stringify(misHabitos));
+            input.value = "";
+            cargarTareas();
+        }
+    }
+
+    function borrarTodo() {
+        if(confirm("¿Borrar todo?")) {
+            localStorage.clear();
+            location.reload();
+        }
     }
 
     cargarTareas();
