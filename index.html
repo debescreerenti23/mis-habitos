@@ -3,91 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Diario de Hábitos</title>
-    
+    <title>Habit Tracker Pro</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✅</text></svg>">
-    
     <meta name="theme-color" id="meta-theme" content="#28a745">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
     <style>
-        /* Variables de color */
         :root {
-            --bg-body: #f0f2f5;
-            --bg-card: #ffffff;
-            --text-main: #1a1a1a;
-            --text-sec: #666;
-            --bg-tarea: #fafafa;
-            --border: #eee;
+            --bg-body: #f0f2f5; --bg-card: #ffffff; --text-main: #1a1a1a;
+            --text-sec: #666; --bg-tarea: #fafafa; --border: #eee;
         }
-
         [data-theme="dark"] {
-            --bg-body: #121212;
-            --bg-card: #1e1e1e;
-            --text-main: #ffffff;
-            --text-sec: #b0b0b0;
-            --bg-tarea: #2d2d2d;
-            --border: #333;
+            --bg-body: #121212; --bg-card: #1e1e1e; --text-main: #ffffff;
+            --text-sec: #b0b0b0; --bg-tarea: #2d2d2d; --border: #333;
         }
 
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: var(--bg-body); 
-            margin: 0;
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            transition: 0.3s; 
-        }
-
-        .card { 
-            background: var(--bg-card); 
-            padding: 25px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
-            width: 100%; 
-            max-width: 400px; 
-            position: relative; 
-            box-sizing: border-box;
-        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
         
-        h1 { color: var(--text-main); font-size: 1.4rem; margin: 0 0 5px 0; }
+        .card { background: var(--bg-card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; position: relative; margin-bottom: 20px; }
+        
+        h1, h2 { color: var(--text-main); font-size: 1.4rem; margin: 0 0 5px 0; }
+        h2 { font-size: 1.1rem; margin-top: 10px; }
         #fecha { color: var(--text-sec); margin-bottom: 15px; font-size: 0.9rem; display: block; }
 
-        .btn-dark-mode { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 5px; }
+        .btn-dark-mode { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.2rem; cursor: pointer; }
 
-        /* Estadísticas */
+        /* Stats & Progreso */
         .stats { display: flex; gap: 10px; margin-bottom: 20px; }
         .stat-box { background: rgba(255, 152, 0, 0.1); padding: 10px; border-radius: 12px; flex: 1; text-align: center; border: 1px solid rgba(255, 152, 0, 0.3); }
         .stat-number { display: block; font-size: 1.2rem; font-weight: bold; color: #ff9800; }
         .stat-label { font-size: 0.7rem; color: #ff9800; text-transform: uppercase; }
 
-        /* Progreso */
         .progreso-container { background: var(--border); border-radius: 10px; height: 10px; margin-bottom: 20px; overflow: hidden; }
         #barra-progreso { background: #28a745; width: 0%; height: 100%; transition: width 0.4s ease; }
-        #texto-progreso { font-size: 0.8rem; color: #28a745; font-weight: bold; margin-bottom: 10px; display: block; }
         
-        /* Inputs */
+        /* Inputs y Tareas */
         .input-group { display: flex; gap: 10px; margin-bottom: 25px; }
-        input[type="text"] { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid var(--border); outline: none; background: var(--bg-card); color: var(--text-main); }
+        input[type="text"] { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg-card); color: var(--text-main); outline: none; }
         .btn-add { background: #28a745; color: white; border: none; border-radius: 10px; padding: 10px 18px; font-weight: bold; cursor: pointer; }
         
-        /* Tareas */
         .tarea { display: flex; flex-direction: column; margin-bottom: 12px; background: var(--bg-tarea); padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
-        .tarea-header { display: flex; align-items: center; width: 100%; }
-        input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; accent-color: #28a745; cursor: pointer; }
-        .texto-tarea { flex: 1; font-size: 1rem; color: var(--text-main); }
+        .tarea-header { display: flex; align-items: center; }
+        input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; accent-color: #28a745; }
+        .texto-tarea { flex: 1; color: var(--text-main); }
         .completada .texto-tarea { text-decoration: line-through; color: var(--text-sec); opacity: 0.6; }
 
-        .detalle-ejercicio { margin-top: 10px; margin-left: 37px; padding: 8px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.8rem; background: var(--bg-body); color: var(--text-main); outline: none; }
-        .btn-eliminar { background: none; color: #ff4757; padding: 5px; font-size: 1.2rem; border: none; cursor: pointer; line-height: 1; }
-        
-        .btn-reiniciar { background: #ff4757; margin-top: 20px; width: 100%; padding: 12px; color: white; border-radius: 12px; border: none; font-size: 0.9rem; font-weight: bold; cursor: pointer; opacity: 0.8; transition: 0.2s; }
-        .btn-reiniciar:hover { opacity: 1; }
+        /* CALENDARIO */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 15px; }
+        .calendar-day { aspect-ratio: 1; border-radius: 4px; background: var(--border); font-size: 0.6rem; display: flex; align-items: center; justify-content: center; color: var(--text-sec); position: relative; cursor: help; }
+        .day-perfect { background: #28a745 !important; color: white; }
+        .day-partial { background: #94d3a2 !important; }
 
-        /* Footer */
-        footer { margin-top: 30px; text-align: center; font-size: 0.8rem; color: var(--text-sec); opacity: 0.7; width: 100%; }
+        .btn-reiniciar { background: #ff4757; margin-top: 20px; width: 100%; padding: 12px; color: white; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; opacity: 0.8; }
+        footer { margin-top: 30px; text-align: center; font-size: 0.8rem; color: var(--text-sec); opacity: 0.7; }
     </style>
 </head>
 <body data-theme="light">
@@ -98,20 +64,11 @@
     <span id="fecha"></span>
 
     <div class="stats">
-        <div class="stat-box">
-            <span class="stat-number" id="racha-dias">0</span>
-            <span class="stat-label">🔥 Racha</span>
-        </div>
-        <div class="stat-box">
-            <span class="stat-number" id="total-completados">0</span>
-            <span class="stat-label">🏆 Total</span>
-        </div>
+        <div class="stat-box"><span class="stat-number" id="racha-dias">0</span><span class="stat-label">🔥 Racha</span></div>
+        <div class="stat-box"><span class="stat-number" id="total-completados">0</span><span class="stat-label">🏆 Total</span></div>
     </div>
 
-    <span id="texto-progreso">Progreso: 0%</span>
-    <div class="progreso-container">
-        <div id="barra-progreso"></div>
-    </div>
+    <div class="progreso-container"><div id="barra-progreso"></div></div>
 
     <div class="input-group">
         <input type="text" id="nueva-tarea" placeholder="Nuevo hábito...">
@@ -119,39 +76,32 @@
     </div>
 
     <div id="lista-tareas"></div>
-
     <button class="btn-reiniciar" onclick="borrarTodo()">Reiniciar Datos</button>
 </div>
 
-<footer>
-    javilindj - All Rights Reserved &copy; <span id="year"></span>
-</footer>
+<div class="card">
+    <h2>Calendario del Mes</h2>
+    <div class="calendar-grid" id="calendar-grid"></div>
+</div>
+
+<footer>javilindj - All Rights Reserved &copy; <span id="year"></span></footer>
 
 <script>
-    // 1. Configuración Inicial y Variables
     document.getElementById('year').innerText = new Date().getFullYear();
     let misHabitos = JSON.parse(localStorage.getItem('misHabitosLista')) || ["Ejercicio 🏋️", "Lectura 📚", "JavaScript 💻"];
     
-    const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'long' };
-    document.getElementById('fecha').innerText = new Date().toLocaleDateString('es-ES', opcionesFecha);
-
-    // 2. Lógica de Modo Oscuro
     function toggleDarkMode() {
         const body = document.body;
-        const currentTheme = body.getAttribute('data-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        
+        const newTheme = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
         body.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
         document.getElementById('dark-icon').innerText = newTheme === 'light' ? '🌙' : '☀️';
-        document.getElementById('meta-theme').setAttribute('content', newTheme === 'light' ? '#28a745' : '#1e1e1e');
     }
 
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.body.setAttribute('data-theme', savedTheme);
     document.getElementById('dark-icon').innerText = savedTheme === 'light' ? '🌙' : '☀️';
 
-    // 3. Funciones Principales
     function cargarTareas() {
         const listaDiv = document.getElementById('lista-tareas');
         listaDiv.innerHTML = "";
@@ -175,6 +125,7 @@
                 div.classList.toggle('completada');
                 guardarProgreso(fechaKey, tarea, check.checked);
                 actualizarBarra();
+                renderCalendario(); // Actualizar calendario al marcar
             };
 
             const span = document.createElement('span');
@@ -183,28 +134,49 @@
 
             const btnEliminar = document.createElement('button');
             btnEliminar.innerHTML = "&times;";
-            btnEliminar.className = "btn-eliminar";
+            btnEliminar.style.background="none"; btnEliminar.style.border="none"; btnEliminar.style.color="#ff4757"; btnEliminar.style.fontSize="1.2rem";
             btnEliminar.onclick = () => { eliminarTarea(index); };
 
-            header.appendChild(check);
-            header.appendChild(span);
-            header.appendChild(btnEliminar);
+            header.appendChild(check); header.appendChild(span); header.appendChild(btnEliminar);
             div.appendChild(header);
 
-            // Input especial para Ejercicio
             if (tarea.toLowerCase().includes("ejercicio")) {
-                const inputDetalle = document.createElement('input');
-                inputDetalle.type = "text";
-                inputDetalle.className = "detalle-ejercicio";
-                inputDetalle.placeholder = "¿Qué has hecho hoy?";
-                inputDetalle.value = guardado[fechaKey + "_detalle_" + tarea] || "";
-                inputDetalle.oninput = () => { guardarDetalle(fechaKey + "_detalle_" + tarea, inputDetalle.value); };
-                div.appendChild(inputDetalle);
+                const input = document.createElement('input');
+                input.className = "detalle-ejercicio";
+                input.placeholder = "¿Qué has hecho hoy?";
+                input.value = guardado[fechaKey + "_detalle_" + tarea] || "";
+                input.oninput = () => { guardarDetalle(fechaKey + "_detalle_" + tarea, input.value); };
+                div.appendChild(input);
             }
             listaDiv.appendChild(div);
         });
         actualizarBarra();
         calcularRacha();
+        renderCalendario();
+    }
+
+    function renderCalendario() {
+        const grid = document.getElementById('calendar-grid');
+        grid.innerHTML = "";
+        const guardado = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
+        const hoy = new Date();
+        const diasMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
+
+        for (let i = 1; i <= diasMes; i++) {
+            const fechaDía = new Date(hoy.getFullYear(), hoy.getMonth(), i);
+            const key = fechaDía.toDateString();
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'calendar-day';
+            dayDiv.innerText = i;
+
+            if (guardado[key]) {
+                const completas = Object.values(guardado[key]).filter(v => v === true).length;
+                const total = misHabitos.length;
+                if (completas >= total && total > 0) dayDiv.classList.add('day-perfect');
+                else if (completas > 0) dayDiv.classList.add('day-partial');
+            }
+            grid.appendChild(dayDiv);
+        }
     }
 
     function actualizarBarra() {
@@ -213,79 +185,52 @@
         const total = checks.length;
         const porcentaje = total === 0 ? 0 : Math.round((marcados / total) * 100);
         document.getElementById('barra-progreso').style.width = porcentaje + "%";
-        document.getElementById('texto-progreso').innerText = `Progreso: ${porcentaje}% (${marcados}/${total})`;
     }
 
     function calcularRacha() {
         const guardado = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
-        let racha = 0;
-        let totalLogs = 0;
-        let fechaBusqueda = new Date();
+        let racha = 0, totalLogs = 0, fecha = new Date();
 
-        // Total de días perfectos
         Object.keys(guardado).forEach(key => {
-            if (!key.includes("_detalle_")) {
-                const tareasDia = Object.values(guardado[key]);
-                if (tareasDia.length > 0 && tareasDia.every(v => v === true)) totalLogs++;
-            }
+            if (!key.includes("_detalle_") && Object.values(guardado[key]).every(v => v === true)) totalLogs++;
         });
 
-        // Racha actual
         while (true) {
-            const key = fechaBusqueda.toDateString();
-            const dia = guardado[key];
-            if (dia && Object.values(dia).length > 0 && Object.values(dia).every(v => v === true)) {
-                racha++;
-                fechaBusqueda.setDate(fechaBusqueda.getDate() - 1);
+            const key = fecha.toDateString();
+            if (guardado[key] && Object.values(guardado[key]).every(v => v === true)) {
+                racha++; fecha.setDate(fecha.getDate() - 1);
             } else break;
         }
         document.getElementById('racha-dias').innerText = racha;
         document.getElementById('total-completados').innerText = totalLogs;
     }
 
-    function guardarProgreso(fecha, nombreTarea, estado) {
-        let datos = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
-        if (!datos[fecha]) datos[fecha] = {};
-        datos[fecha][nombreTarea] = estado;
-        localStorage.setItem('progresoHabitos', JSON.stringify(datos));
+    function guardarProgreso(f, n, e) {
+        let d = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
+        if (!d[f]) d[f] = {}; d[f][n] = e;
+        localStorage.setItem('progresoHabitos', JSON.stringify(d));
         calcularRacha();
     }
 
-    function guardarDetalle(id, texto) {
-        let datos = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
-        datos[id] = texto;
-        localStorage.setItem('progresoHabitos', JSON.stringify(datos));
+    function guardarDetalle(id, txt) {
+        let d = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
+        d[id] = txt; localStorage.setItem('progresoHabitos', JSON.stringify(d));
     }
 
-    function eliminarTarea(index) {
-        if(confirm("¿Eliminar este hábito?")) {
-            misHabitos.splice(index, 1);
-            localStorage.setItem('misHabitosLista', JSON.stringify(misHabitos));
-            cargarTareas();
-        }
+    function eliminarTarea(i) {
+        if(confirm("¿Eliminar?")) { misHabitos.splice(i, 1); localStorage.setItem('misHabitosLista', JSON.stringify(misHabitos)); cargarTareas(); }
     }
 
     function agregarTareaManual() {
-        const input = document.getElementById('nueva-tarea');
-        const texto = input.value.trim();
-        if (texto !== "") {
-            misHabitos.push(texto);
-            localStorage.setItem('misHabitosLista', JSON.stringify(misHabitos));
-            input.value = "";
-            cargarTareas();
-        }
+        const val = document.getElementById('nueva-tarea').value.trim();
+        if (val) { misHabitos.push(val); localStorage.setItem('misHabitosLista', JSON.stringify(misHabitos)); document.getElementById('nueva-tarea').value = ""; cargarTareas(); }
     }
 
-    function borrarTodo() {
-        if(confirm("¿Estás seguro? Se borrarán todos los hábitos y tu historial de racha.")) {
-            localStorage.clear();
-            location.reload();
-        }
-    }
+    function borrarTodo() { if(confirm("¿Borrar historial?")) { localStorage.clear(); location.reload(); } }
 
-    // Iniciar App
+    const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
+    document.getElementById('fecha').innerText = new Date().toLocaleDateString('es-ES', opciones);
     cargarTareas();
 </script>
-
 </body>
 </html>
