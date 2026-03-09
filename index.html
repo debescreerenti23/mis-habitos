@@ -9,16 +9,16 @@
     <style>
         :root {
             --bg-body: #f0f2f5; --bg-card: #ffffff; --text-main: #1a1a1a;
-            --text-sec: #666; --bg-tarea: #fafafa; --border: #eee;
+            --text-sec: #666; --bg-tarea: #fafafa; --border: #eee; --modal-bg: rgba(0,0,0,0.5);
         }
         [data-theme="dark"] {
             --bg-body: #121212; --bg-card: #1e1e1e; --text-main: #ffffff;
-            --text-sec: #b0b0b0; --bg-tarea: #2d2d2d; --border: #333;
+            --text-sec: #b0b0b0; --bg-tarea: #2d2d2d; --border: #333; --modal-bg: rgba(0,0,0,0.8);
         }
 
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
         
-        .card { background: var(--bg-card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; position: relative; margin-bottom: 20px; }
+        .card { background: var(--bg-card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; position: relative; margin-bottom: 20px; box-sizing: border-box; }
         
         h1, h2 { color: var(--text-main); font-size: 1.4rem; margin: 0 0 5px 0; }
         h2 { font-size: 1.1rem; margin-top: 10px; }
@@ -35,25 +35,33 @@
         .progreso-container { background: var(--border); border-radius: 10px; height: 10px; margin-bottom: 20px; overflow: hidden; }
         #barra-progreso { background: #28a745; width: 0%; height: 100%; transition: width 0.4s ease; }
         
-        /* Inputs y Tareas */
-        .input-group { display: flex; gap: 10px; margin-bottom: 25px; }
-        input[type="text"] { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg-card); color: var(--text-main); outline: none; }
-        .btn-add { background: #28a745; color: white; border: none; border-radius: 10px; padding: 10px 18px; font-weight: bold; cursor: pointer; }
-        
+        /* Tareas */
         .tarea { display: flex; flex-direction: column; margin-bottom: 12px; background: var(--bg-tarea); padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
         .tarea-header { display: flex; align-items: center; }
         input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; accent-color: #28a745; }
         .texto-tarea { flex: 1; color: var(--text-main); }
-        .completada .texto-tarea { text-decoration: line-through; color: var(--text-sec); opacity: 0.6; }
 
         /* CALENDARIO */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 15px; }
-        .calendar-day { aspect-ratio: 1; border-radius: 4px; background: var(--border); font-size: 0.6rem; display: flex; align-items: center; justify-content: center; color: var(--text-sec); position: relative; cursor: help; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px; }
+        .calendar-day { aspect-ratio: 1; border-radius: 8px; background: var(--border); font-size: 0.7rem; display: flex; align-items: center; justify-content: center; color: var(--text-sec); cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
+        .calendar-day:hover { border-color: #28a745; transform: scale(1.1); }
         .day-perfect { background: #28a745 !important; color: white; }
-        .day-partial { background: #94d3a2 !important; }
+        .day-partial { background: #94d3a2 !important; color: #1a1a1a; }
+
+        /* MODAL FLOTANTE */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-content { background: var(--bg-card); padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: var(--text-main); }
+        .modal-body { color: var(--text-main); }
+        .modal-item { padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
+        .btn-cerrar { background: #28a745; color: white; border: none; padding: 10px; width: 100%; border-radius: 10px; margin-top: 15px; cursor: pointer; font-weight: bold; }
 
         .btn-reiniciar { background: #ff4757; margin-top: 20px; width: 100%; padding: 12px; color: white; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; opacity: 0.8; }
         footer { margin-top: 30px; text-align: center; font-size: 0.8rem; color: var(--text-sec); opacity: 0.7; }
+        
+        .input-group { display: flex; gap: 10px; margin-bottom: 25px; }
+        .input-group input { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg-card); color: var(--text-main); outline: none; }
+        .btn-add { background: #28a745; color: white; border: none; border-radius: 10px; padding: 0 15px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body data-theme="light">
@@ -80,8 +88,20 @@
 </div>
 
 <div class="card">
-    <h2>Calendario del Mes</h2>
+    <h2>Mi Consistencia</h2>
     <div class="calendar-grid" id="calendar-grid"></div>
+</div>
+
+<div class="modal" id="modal-detalles">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-fecha-titulo">Detalles</h3>
+            <span style="cursor:pointer" onclick="cerrarModal()">&times;</span>
+        </div>
+        <div class="modal-body" id="modal-lista">
+            </div>
+        <button class="btn-cerrar" onclick="cerrarModal()">Entendido</button>
+    </div>
 </div>
 
 <footer>javilindj - All Rights Reserved &copy; <span id="year"></span></footer>
@@ -125,7 +145,7 @@
                 div.classList.toggle('completada');
                 guardarProgreso(fechaKey, tarea, check.checked);
                 actualizarBarra();
-                renderCalendario(); // Actualizar calendario al marcar
+                renderCalendario();
             };
 
             const span = document.createElement('span');
@@ -142,7 +162,7 @@
 
             if (tarea.toLowerCase().includes("ejercicio")) {
                 const input = document.createElement('input');
-                input.className = "detalle-ejercicio";
+                input.style.marginTop = "8px"; input.style.padding = "5px"; input.style.borderRadius = "5px"; input.style.border = "1px solid var(--border)";
                 input.placeholder = "¿Qué has hecho hoy?";
                 input.value = guardado[fechaKey + "_detalle_" + tarea] || "";
                 input.oninput = () => { guardarDetalle(fechaKey + "_detalle_" + tarea, input.value); };
@@ -171,14 +191,48 @@
 
             if (guardado[key]) {
                 const completas = Object.values(guardado[key]).filter(v => v === true).length;
-                const total = misHabitos.length;
-                if (completas >= total && total > 0) dayDiv.classList.add('day-perfect');
+                if (completas >= misHabitos.length && misHabitos.length > 0) dayDiv.classList.add('day-perfect');
                 else if (completas > 0) dayDiv.classList.add('day-partial');
             }
+
+            // EVENTO CLICK PARA MOSTRAR DETALLES
+            dayDiv.onclick = () => mostrarDetallesDia(key, fechaDía);
+            
             grid.appendChild(dayDiv);
         }
     }
 
+    function mostrarDetallesDia(key, objetoFecha) {
+        const modal = document.getElementById('modal-detalles');
+        const lista = document.getElementById('modal-lista');
+        const titulo = document.getElementById('modal-fecha-titulo');
+        const guardado = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
+        
+        titulo.innerText = objetoFecha.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+        lista.innerHTML = "";
+
+        const datosDia = guardado[key];
+
+        if (!datosDia || Object.keys(datosDia).length === 0) {
+            lista.innerHTML = "<p style='text-align:center; opacity:0.6'>No hay registros este día.</p>";
+        } else {
+            for (const [habito, completado] of Object.entries(datosDia)) {
+                const item = document.createElement('div');
+                item.className = "modal-item";
+                const detalle = guardado[key + "_detalle_" + habito] || "";
+                item.innerHTML = `<span>${habito} ${detalle ? '<br><small>📝 '+detalle+'</small>' : ''}</span> <span>${completado ? '✅' : '❌'}</span>`;
+                lista.appendChild(item);
+            }
+        }
+
+        modal.style.display = "flex";
+    }
+
+    function cerrarModal() {
+        document.getElementById('modal-detalles').style.display = "none";
+    }
+
+    // Funciones de utilidad (idénticas a las anteriores)
     function actualizarBarra() {
         const checks = document.querySelectorAll('input[type="checkbox"]');
         const marcados = Array.from(checks).filter(c => c.checked).length;
@@ -189,17 +243,11 @@
 
     function calcularRacha() {
         const guardado = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
-        let racha = 0, totalLogs = 0, fecha = new Date();
-
-        Object.keys(guardado).forEach(key => {
-            if (!key.includes("_detalle_") && Object.values(guardado[key]).every(v => v === true)) totalLogs++;
-        });
-
+        let racha = 0, totalLogs = 0, f = new Date();
+        Object.keys(guardado).forEach(k => { if (!k.includes("_detalle_") && Object.values(guardado[k]).every(v => v === true)) totalLogs++; });
         while (true) {
-            const key = fecha.toDateString();
-            if (guardado[key] && Object.values(guardado[key]).every(v => v === true)) {
-                racha++; fecha.setDate(fecha.getDate() - 1);
-            } else break;
+            const k = f.toDateString();
+            if (guardado[k] && Object.values(guardado[k]).every(v => v === true)) { racha++; f.setDate(f.getDate() - 1); } else break;
         }
         document.getElementById('racha-dias').innerText = racha;
         document.getElementById('total-completados').innerText = totalLogs;
