@@ -14,7 +14,7 @@
     }
 
     // TAREAS POR DEFECTO SOLICITADAS
-    let misHabitos = JSON.parse(localStorage.getItem('misHabitosLista')) || ["Lectura 📚", "Ejercicio 🏋️", "Aprender Inglés 🇬🇧", "Programar 💻"];
+    let misHabitos = JSON.parse(localStorage.getItem('misHabitosLista')) || ["Lectura 📚", "Ejercicio 🏋️", "Aprender Inglés", "Programar 💻"];
     
     function toggleDarkMode() {
         const body = document.body;
