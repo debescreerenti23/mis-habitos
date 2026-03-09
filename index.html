@@ -6,10 +6,9 @@
     <title>Habit Tracker Pro | Portfolio javilindj</title>
     
     <meta property="og:title" content="Habit Tracker Pro - Gestión de Hábitos Inteligente">
-    <meta property="og:description" content="App funcional con persistencia de datos, modo oscuro y calendario de consistencia. Desarrollada con JavaScript Vanila.">
+    <meta property="og:description" content="App funcional con persistencia de datos, modo oscuro y calendario de consistencia. Desarrollada con JavaScript Vanila por javilindj.">
     <meta property="og:type" content="website">
-    <meta name="author" content="javilindj">
-
+    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
     <meta name="theme-color" id="meta-theme" content="#28a745">
 
@@ -26,7 +25,6 @@
         }
 
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
-        
         .card { background: var(--bg-card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; position: relative; margin-bottom: 20px; box-sizing: border-box; }
         
         h1 { color: var(--text-main); font-size: 1.4rem; margin: 0; }
@@ -53,6 +51,8 @@
         .texto-tarea { flex: 1; color: var(--text-main); }
         .completada .texto-tarea { text-decoration: line-through; color: var(--text-sec); opacity: 0.6; }
 
+        .input-detalle { margin-top: 10px; margin-left: 37px; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); font-size: 0.8rem; outline: none; }
+
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px; }
         .calendar-day { aspect-ratio: 1; border-radius: 8px; background: var(--border); font-size: 0.7rem; display: flex; align-items: center; justify-content: center; color: var(--text-sec); cursor: pointer; transition: 0.2s; }
         .day-perfect { background: #28a745 !important; color: white; }
@@ -60,7 +60,7 @@
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
         .modal-content { background: var(--bg-card); padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; }
-        .modal-item { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; color: var(--text-main); }
+        .modal-item { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; color: var(--text-main); }
 
         .btn-reiniciar { background: #ff4757; margin-top: 20px; width: 100%; padding: 12px; color: white; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; opacity: 0.7; }
         footer { margin-top: 30px; text-align: center; font-size: 0.8rem; color: var(--text-sec); opacity: 0.7; }
@@ -70,7 +70,7 @@
 
 <div class="card">
     <button class="btn-dark-mode" onclick="toggleDarkMode()" id="dark-icon">🌙</button>
-    <h1>Mi rutina diaria</h1>
+    <h1>Mi Día</h1>
     <span id="fecha"></span>
     <span id="frase-motivadora">Cargando inspiración...</span>
 
@@ -82,7 +82,7 @@
     <div class="progreso-container"><div id="barra-progreso"></div></div>
 
     <div class="input-group">
-        <input type="text" id="nueva-tarea" placeholder="Nuevo hábito profesional...">
+        <input type="text" id="nueva-tarea" placeholder="Nuevo hábito...">
         <button class="btn-add" onclick="agregarTareaManual()">+</button>
     </div>
 
@@ -106,16 +106,13 @@
 <footer>javilindj - All Rights Reserved &copy; <span id="year"></span></footer>
 
 <script>
-    // FRASES MOTIVADORAS
     const frases = [
         "El código limpio siempre parece que fue escrito por alguien a quien le importa.",
         "La disciplina es el puente entre tus metas y tus logros.",
         "Pequeños commits diarios construyen grandes aplicaciones.",
         "Tu única competencia es la persona que fuiste ayer.",
-        "La constancia es la clave del éxito en el desarrollo.",
-        "No te detengas hasta sentirte orgulloso de tu progreso.",
-        "Un buen hábito es más fuerte que un millón de deseos.",
-        "La excelencia no es un acto, es un hábito."
+        "La constancia es la clave del éxito.",
+        "No te detengas hasta sentirte orgulloso."
     ];
 
     function nuevaFrase() {
@@ -123,9 +120,8 @@
         document.getElementById('frase-motivadora').innerText = "“" + frases[index] + "”";
     }
 
-    // CONFIGURACIÓN INICIAL (Tareas de Portfolio)
-    document.getElementById('year').innerText = new Date().getFullYear();
-    let misHabitos = JSON.parse(localStorage.getItem('misHabitosLista')) || ["Aprender React ⚛️", "Gimnasio 🦾", "Contribuir en GitHub 🚀", "Leer Documentación 📖"];
+    // TAREAS POR DEFECTO SOLICITADAS
+    let misHabitos = JSON.parse(localStorage.getItem('misHabitosLista')) || ["Lectura 📚", "Ejercicio 🏋️", "Aprender Inglés 🇬🇧", "Programar 💻"];
     
     function toggleDarkMode() {
         const body = document.body;
@@ -163,7 +159,7 @@
                 guardarProgreso(fechaKey, tarea, check.checked);
                 actualizarBarra();
                 renderCalendario();
-                verificarConfeti(); // Verificar si lanzamos confeti
+                verificarConfeti();
             };
 
             const span = document.createElement('span');
@@ -177,6 +173,17 @@
 
             header.appendChild(check); header.appendChild(span); header.appendChild(btnEliminar);
             div.appendChild(header);
+
+            // INPUT ESPECIAL PARA EJERCICIO
+            if (tarea.toLowerCase().includes("ejercicio")) {
+                const inputD = document.createElement('input');
+                inputD.className = "input-detalle";
+                inputD.placeholder = "¿Qué has entrenado hoy?";
+                inputD.value = guardado[fechaKey + "_detalle_" + tarea] || "";
+                inputD.oninput = () => { guardarDetalle(fechaKey + "_detalle_" + tarea, inputD.value); };
+                div.appendChild(inputD);
+            }
+
             listaDiv.appendChild(div);
         });
         actualizarBarra();
@@ -184,17 +191,11 @@
         renderCalendario();
     }
 
-    // EFECTO WOW: CONFETI AL 100%
     function verificarConfeti() {
         const checks = document.querySelectorAll('input[type="checkbox"]');
         const marcados = Array.from(checks).filter(c => c.checked).length;
         if (marcados === checks.length && checks.length > 0) {
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#28a745', '#ff9800', '#ffffff']
-            });
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
         }
     }
 
@@ -206,18 +207,18 @@
         const diasMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
 
         for (let i = 1; i <= diasMes; i++) {
-            const fechaDía = new Date(hoy.getFullYear(), hoy.getMonth(), i);
-            const key = fechaDía.toDateString();
+            const fD = new Date(hoy.getFullYear(), hoy.getMonth(), i);
+            const key = fD.toDateString();
             const dayDiv = document.createElement('div');
             dayDiv.className = 'calendar-day';
             dayDiv.innerText = i;
 
             if (guardado[key]) {
-                const completas = Object.values(guardado[key]).filter(v => v === true).length;
-                if (completas >= misHabitos.length && misHabitos.length > 0) dayDiv.classList.add('day-perfect');
-                else if (completas > 0) dayDiv.classList.add('day-partial');
+                const comps = Object.values(guardado[key]).filter(v => v === true).length;
+                if (comps >= misHabitos.length && misHabitos.length > 0) dayDiv.classList.add('day-perfect');
+                else if (comps > 0) dayDiv.classList.add('day-partial');
             }
-            dayDiv.onclick = () => mostrarDetallesDia(key, fechaDía);
+            dayDiv.onclick = () => mostrarDetallesDia(key, fD);
             grid.appendChild(dayDiv);
         }
     }
@@ -233,12 +234,19 @@
 
         const datosDia = guardado[key];
         if (!datosDia) {
-            lista.innerHTML = "<p style='text-align:center; opacity:0.6'>Sin registros.</p>";
+            lista.innerHTML = "<p style='text-align:center; opacity:0.5'>Sin registros.</p>";
         } else {
             for (const [habito, completado] of Object.entries(datosDia)) {
                 const item = document.createElement('div');
                 item.className = "modal-item";
-                item.innerHTML = `<span>${habito}</span> <span>${completado ? '✅' : '❌'}</span>`;
+                const det = guardado[key + "_detalle_" + habito] || "";
+                item.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; width:100%">
+                        <span style="font-weight:bold">${habito}</span>
+                        <span>${completado ? '✅' : '❌'}</span>
+                    </div>
+                    ${det ? '<small style="color:var(--text-sec); margin-top:4px">📝 '+det+'</small>' : ''}
+                `;
                 lista.appendChild(item);
             }
         }
@@ -250,20 +258,18 @@
     function actualizarBarra() {
         const checks = document.querySelectorAll('input[type="checkbox"]');
         const marcados = Array.from(checks).filter(c => c.checked).length;
-        const total = checks.length;
-        const porcentaje = total === 0 ? 0 : Math.round((marcados / total) * 100);
-        document.getElementById('barra-progreso').style.width = porcentaje + "%";
+        document.getElementById('barra-progreso').style.width = checks.length === 0 ? "0%" : (marcados/checks.length*100) + "%";
     }
 
     function calcularRacha() {
         const guardado = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
         let racha = 0, totalLogs = 0, f = new Date();
         Object.keys(guardado).forEach(k => { 
-            if (!k.includes("_detalle_") && Object.values(guardado[k]).length >= misHabitos.length && Object.values(guardado[k]).every(v => v === true)) totalLogs++; 
+            if (!k.includes("_detalle_") && Object.values(guardado[k]).every(v => v === true)) totalLogs++; 
         });
         while (true) {
             const k = f.toDateString();
-            if (guardado[k] && Object.values(guardado[k]).length >= misHabitos.length && Object.values(guardado[k]).every(v => v === true)) { racha++; f.setDate(f.getDate() - 1); } else break;
+            if (guardado[k] && Object.values(guardado[k]).every(v => v === true)) { racha++; f.setDate(f.getDate() - 1); } else break;
         }
         document.getElementById('racha-dias').innerText = racha;
         document.getElementById('total-completados').innerText = totalLogs;
@@ -274,6 +280,11 @@
         if (!d[f]) d[f] = {}; d[f][n] = e;
         localStorage.setItem('progresoHabitos', JSON.stringify(d));
         calcularRacha();
+    }
+
+    function guardarDetalle(id, txt) {
+        let d = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
+        d[id] = txt; localStorage.setItem('progresoHabitos', JSON.stringify(d));
     }
 
     function eliminarTarea(i) {
@@ -287,9 +298,7 @@
 
     function borrarTodo() { if(confirm("¿Borrar historial?")) { localStorage.clear(); location.reload(); } }
 
-    const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
-    document.getElementById('fecha').innerText = new Date().toLocaleDateString('es-ES', opciones);
-    
+    document.getElementById('fecha').innerText = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
     nuevaFrase();
     cargarTareas();
 </script>
