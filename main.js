@@ -220,4 +220,4 @@ function iniciarApp() {
 }
 
 // Escuchar cuando el navegador termina de cargar el HTML
-document.addEventListener
+document.addEventListener('DOMContentLoaded', iniciarApp);
