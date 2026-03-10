@@ -1,3 +1,9 @@
+/**
+ * HABIT TRACKER PRO - Lógica de Negocio
+ * Desarrollado por javilindj
+ */
+
+// 1. LISTA DE FRASES (Base de datos local simple)
 const frases = [
     "El código limpio siempre parece que fue escrito por alguien a quien le importa.",
     "La disciplina es el puente entre tus metas y tus logros.",
@@ -7,6 +13,13 @@ const frases = [
     "No te detengas hasta sentirte orgulloso."
 ];
 
+// 2. TAREAS INICIALES (Si el usuario es nuevo, cargamos estas)
+// Usamos JSON.parse para convertir el texto de LocalStorage en un Array de JS
+let misHabitos = JSON.parse(localStorage.getItem('misHabitosLista')) || ["Lectura 📚", "Ejercicio 🏋️", "Aprender Inglés", "Programar 💻"];
+
+/**
+ * Genera una frase aleatoria del array y la inyecta en el HTML
+ */
 function nuevaFrase() {
     const elementoFrase = document.getElementById('frase-motivadora');
     if (elementoFrase) {
@@ -15,9 +28,9 @@ function nuevaFrase() {
     }
 }
 
-// TAREAS POR DEFECTO SOLICITADAS
-let misHabitos = JSON.parse(localStorage.getItem('misHabitosLista')) || ["Lectura 📚", "Ejercicio 🏋️", "Aprender Inglés", "Programar 💻"];
-
+/**
+ * Controla el cambio entre modo claro y oscuro
+ */
 function toggleDarkMode() {
     const body = document.body;
     const newTheme = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
@@ -26,20 +39,59 @@ function toggleDarkMode() {
     document.getElementById('dark-icon').innerText = newTheme === 'light' ? '🌙' : '☀️';
 }
 
-// Aplicar tema guardado inmediatamente para evitar parpadeo
-const savedTheme = localStorage.getItem('theme') || 'light';
-document.body.setAttribute('data-theme', savedTheme);
+/**
+ * Actualiza visualmente la barra de progreso superior
+ */
+function actualizarBarra() {
+    const barra = document.getElementById('barra-progreso');
+    if (!barra) return;
+    const checks = document.querySelectorAll('input[type="checkbox"]');
+    const marcados = Array.from(checks).filter(c => c.checked).length;
+    // Calculamos el porcentaje: (marcados / total) * 100
+    const porcentaje = checks.length === 0 ? 0 : (marcados / checks.length * 100);
+    barra.style.width = porcentaje + "%";
+}
 
+/**
+ * Elimina un hábito del array y actualiza la vista
+ */
+function eliminarTarea(index) {
+    if(confirm("¿Seguro que quieres eliminar este hábito?")) {
+        misHabitos.splice(index, 1); // Elimina 1 elemento en la posición 'index'
+        localStorage.setItem('misHabitosLista', JSON.stringify(misHabitos));
+        cargarTareas();
+    }
+}
+
+/**
+ * Añade un nuevo hábito desde el input de texto
+ */
+function agregarTareaManual() {
+    const input = document.getElementById('nueva-tarea');
+    const valor = input.value.trim();
+    if (valor) {
+        misHabitos.push(valor);
+        localStorage.setItem('misHabitosLista', JSON.stringify(misHabitos));
+        input.value = ""; // Limpia el buscador
+        cargarTareas();
+    }
+}
+
+/**
+ * Renderiza la lista de tareas en el DOM basándose en el array 'misHabitos'
+ */
 function cargarTareas() {
     const listaDiv = document.getElementById('lista-tareas');
     if (!listaDiv) return;
-    listaDiv.innerHTML = "";
+    listaDiv.innerHTML = ""; 
+
     const guardado = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
-    const fechaKey = new Date().toDateString();
+    const fechaKey = new Date().toDateString(); 
 
     misHabitos.forEach((tarea, index) => {
         const div = document.createElement('div');
         div.className = 'tarea';
+        
         const header = document.createElement('div');
         header.className = 'tarea-header';
 
@@ -64,10 +116,15 @@ function cargarTareas() {
 
         const btnEliminar = document.createElement('button');
         btnEliminar.innerHTML = "&times;";
-        btnEliminar.style.background="none"; btnEliminar.style.border="none"; btnEliminar.style.color="#ff4757"; btnEliminar.style.fontSize="1.2rem"; btnEliminar.style.cursor="pointer";
+        btnEliminar.style.background = "none";
+        btnEliminar.style.border = "none";
+        btnEliminar.style.color="#ff4757";
+        btnEliminar.style.cursor = "pointer";
         btnEliminar.onclick = () => { eliminarTarea(index); };
 
-        header.appendChild(check); header.appendChild(span); header.appendChild(btnEliminar);
+        header.appendChild(check); 
+        header.appendChild(span); 
+        header.appendChild(btnEliminar);
         div.appendChild(header);
 
         if (tarea.toLowerCase().includes("ejercicio")) {
@@ -81,11 +138,15 @@ function cargarTareas() {
 
         listaDiv.appendChild(div);
     });
+
     actualizarBarra();
     calcularRacha();
     renderCalendario();
 }
 
+/**
+ * Lanza confeti si todas las tareas del día están completadas
+ */
 function verificarConfeti() {
     const checks = document.querySelectorAll('input[type="checkbox"]');
     const marcados = Array.from(checks).filter(c => c.checked).length;
@@ -94,31 +155,9 @@ function verificarConfeti() {
     }
 }
 
-function renderCalendario() {
-    const grid = document.getElementById('calendar-grid');
-    if (!grid) return;
-    grid.innerHTML = "";
-    const guardado = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
-    const hoy = new Date();
-    const diasMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
-
-    for (let i = 1; i <= diasMes; i++) {
-        const fD = new Date(hoy.getFullYear(), hoy.getMonth(), i);
-        const key = fD.toDateString();
-        const dayDiv = document.createElement('div');
-        dayDiv.className = 'calendar-day';
-        dayDiv.innerText = i;
-
-        if (guardado[key]) {
-            const comps = Object.values(guardado[key]).filter(v => v === true).length;
-            if (comps >= misHabitos.length && misHabitos.length > 0) dayDiv.classList.add('day-perfect');
-            else if (comps > 0) dayDiv.classList.add('day-partial');
-        }
-        dayDiv.onclick = () => mostrarDetallesDia(key, fD);
-        grid.appendChild(dayDiv);
-    }
-}
-
+/**
+ * Muestra el modal con lo que se hizo en un día pasado
+ */
 function mostrarDetallesDia(key, objetoFecha) {
     const modal = document.getElementById('modal-detalles');
     const lista = document.getElementById('modal-lista');
@@ -132,6 +171,7 @@ function mostrarDetallesDia(key, objetoFecha) {
     if (!datosDia) {
         lista.innerHTML = "<p style='text-align:center; opacity:0.5'>Sin registros.</p>";
     } else {
+        // Recorremos los hábitos guardados en esa fecha
         for (const [habito, completado] of Object.entries(datosDia)) {
             const item = document.createElement('div');
             item.className = "modal-item";
@@ -151,73 +191,119 @@ function mostrarDetallesDia(key, objetoFecha) {
 
 function cerrarModal() { document.getElementById('modal-detalles').style.display = "none"; }
 
-function actualizarBarra() {
-    const barra = document.getElementById('barra-progreso');
-    if (!barra) return;
-    const checks = document.querySelectorAll('input[type="checkbox"]');
-    const marcados = Array.from(checks).filter(c => c.checked).length;
-    barra.style.width = checks.length === 0 ? "0%" : (marcados/checks.length*100) + "%";
+/**
+ * Dibuja el calendario de consistencia
+ */
+function renderCalendario() {
+    const grid = document.getElementById('calendar-grid');
+    if (!grid) return;
+    grid.innerHTML = "";
+    
+    const guardado = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
+    const hoy = new Date();
+    const diasMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
+
+    for (let i = 1; i <= diasMes; i++) {
+        const fD = new Date(hoy.getFullYear(), hoy.getMonth(), i);
+        const key = fD.toDateString();
+        const dayDiv = document.createElement('div');
+        dayDiv.className = 'calendar-day';
+        dayDiv.innerText = i;
+
+        if (guardado[key]) {
+            const comps = Object.values(guardado[key]).filter(v => v === true).length;
+            if (comps >= misHabitos.length && misHabitos.length > 0) {
+                dayDiv.classList.add('day-perfect'); 
+            } else if (comps > 0) {
+                dayDiv.classList.add('day-partial'); 
+            }
+        }
+        dayDiv.onclick = () => mostrarDetallesDia(key, fD);
+        grid.appendChild(dayDiv);
+    }
 }
 
+/**
+ * Gestión de Rachas (Streaks)
+ */
 function calcularRacha() {
     const guardado = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
     let racha = 0, totalLogs = 0, f = new Date();
+    
     Object.keys(guardado).forEach(k => { 
         if (!k.includes("_detalle_") && Object.values(guardado[k]).every(v => v === true)) totalLogs++; 
     });
+
     while (true) {
         const k = f.toDateString();
-        if (guardado[k] && Object.values(guardado[k]).every(v => v === true)) { racha++; f.setDate(f.getDate() - 1); } else break;
+        if (guardado[k] && Object.values(guardado[k]).every(v => v === true)) { 
+            racha++; 
+            f.setDate(f.getDate() - 1); 
+        } else {
+            break;
+        }
     }
     document.getElementById('racha-dias').innerText = racha;
     document.getElementById('total-completados').innerText = totalLogs;
 }
 
+/**
+ * Persistencia: Guarda estado de checkboxes
+ */
 function guardarProgreso(f, n, e) {
     let d = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
-    if (!d[f]) d[f] = {}; d[f][n] = e;
+    if (!d[f]) d[f] = {}; 
+    d[f][n] = e;
     localStorage.setItem('progresoHabitos', JSON.stringify(d));
     calcularRacha();
 }
 
+/**
+ * Persistencia: Guarda texto de detalles
+ */
 function guardarDetalle(id, txt) {
     let d = JSON.parse(localStorage.getItem('progresoHabitos')) || {};
-    d[id] = txt; localStorage.setItem('progresoHabitos', JSON.stringify(d));
+    d[id] = txt; 
+    localStorage.setItem('progresoHabitos', JSON.stringify(d));
 }
 
-function eliminarTarea(i) {
-    if(confirm("¿Eliminar hábito?")) { misHabitos.splice(i, 1); localStorage.setItem('misHabitosLista', JSON.stringify(misHabitos)); cargarTareas(); }
+/**
+ * Borra todo el LocalStorage (Reset total)
+ */
+function borrarTodo() {
+    if(confirm("¿Estás seguro de que quieres borrar todo tu historial? Esta acción no se puede deshacer.")) {
+        localStorage.clear();
+        location.reload(); // Recarga la página para aplicar los cambios
+    }
 }
 
-function agregarTareaManual() {
-    const val = document.getElementById('nueva-tarea').value.trim();
-    if (val) { misHabitos.push(val); localStorage.setItem('misHabitosLista', JSON.stringify(misHabitos)); document.getElementById('nueva-tarea').value = ""; cargarTareas(); }
-}
-
-function borrarTodo() { if(confirm("¿Borrar historial?")) { localStorage.clear(); location.reload(); } }
-
-// --- LÓGICA DE INICIO (Asegura que el DOM esté listo) ---
+/**
+ * FUNCIÓN DE ARRANQUE (Se ejecuta al cargar el DOM)
+ */
 function iniciarApp() {
-    // 1. Año del footer
+    // Aplicar el tema guardado al cargar
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.setAttribute('data-theme', savedTheme);
+    document.getElementById('dark-icon').innerText = savedTheme === 'light' ? '🌙' : '☀️';
+
+    // Año del footer
     const yearSpan = document.getElementById('year');
     if (yearSpan) yearSpan.innerText = new Date().getFullYear();
 
-    // 2. Fecha actual
+    // Fecha actual formateada
     const fechaSpan = document.getElementById('fecha');
     if (fechaSpan) {
         fechaSpan.innerText = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
     }
 
-    // 3. Icono del modo oscuro según tema guardado
-    const darkIcon = document.getElementById('dark-icon');
-    if (darkIcon) {
-        darkIcon.innerText = document.body.getAttribute('data-theme') === 'light' ? '🌙' : '☀️';
-    }
+    // Título dinámico
+    const tituloOriginal = document.title;
+    window.onblur = () => { document.title = "¡No abandones tus hábitos! 🏃‍♂️"; };
+    window.onfocus = () => { document.title = tituloOriginal; };
 
-    // 4. Otros componentes
     nuevaFrase();
     cargarTareas();
 }
 
-// Escuchar cuando el navegador termina de cargar el HTML
+// Escuchador que espera a que el HTML esté listo antes de ejecutar el JS
 document.addEventListener('DOMContentLoaded', iniciarApp);

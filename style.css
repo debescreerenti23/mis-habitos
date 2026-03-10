@@ -1,50 +1,251 @@
+/* ==========================================================================
+   VARIABLES DE COLOR (Custom Properties)
+   Permiten cambiar el tema de la app modificando solo estos valores.
+   ========================================================================== */
 
-        :root {
-            --bg-body: #f0f2f5; --bg-card: #ffffff; --text-main: #1a1a1a;
-            --text-sec: #666; --bg-tarea: #fafafa; --border: #eee; --modal-bg: rgba(0,0,0,0.5);
-        }
-        [data-theme="dark"] {
-            --bg-body: #121212; --bg-card: #1e1e1e; --text-main: #ffffff;
-            --text-sec: #b0b0b0; --bg-tarea: #2d2d2d; --border: #333; --modal-bg: rgba(0,0,0,0.8);
-        }
+:root {
+    /* Tema Claro (Por defecto) */
+    --bg-body: #f0f2f5;    /* Fondo de la página (gris muy claro) */
+    --bg-card: #ffffff;    /* Fondo de las tarjetas (blanco) */
+    --text-main: #1a1a1a;  /* Texto principal (casi negro) */
+    --text-sec: #666;      /* Texto secundario (gris) */
+    --bg-tarea: #fafafa;   /* Fondo sutil para cada hábito */
+    --border: #eee;        /* Color de bordes y separadores */
+    --modal-bg: rgba(0,0,0,0.5); /* Fondo oscuro traslúcido para el modal */
+}
 
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-body); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
-        .card { background: var(--bg-card); padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; position: relative; margin-bottom: 20px; box-sizing: border-box; }
-        
-        h1 { color: var(--text-main); font-size: 1.4rem; margin: 0; }
-        #fecha { color: var(--text-sec); font-size: 0.9rem; display: block; margin-bottom: 5px; }
-        #frase-motivadora { font-style: italic; font-size: 0.85rem; color: #28a745; margin-bottom: 20px; display: block; min-height: 1.2rem; }
+/* Selector para activar el Tema Oscuro mediante JavaScript */
+[data-theme="dark"] {
+    --bg-body: #121212;    /* Fondo oscuro profundo */
+    --bg-card: #1e1e1e;    /* Tarjetas en gris oscuro */
+    --text-main: #ffffff;  /* Texto blanco */
+    --text-sec: #b0b0b0;   /* Texto secundario gris claro */
+    --bg-tarea: #2d2d2d;   /* Fondo de tarea resaltado */
+    --border: #333;        /* Bordes oscuros */
+    --modal-bg: rgba(0,0,0,0.8); /* Modal más oscuro en este modo */
+}
 
-        .btn-dark-mode { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 1.2rem; cursor: pointer; }
+/* ==========================================================================
+   ESTILOS BASE (Estructura Global)
+   ========================================================================== */
 
-        .stats { display: flex; gap: 10px; margin-bottom: 20px; }
-        .stat-box { background: rgba(255, 152, 0, 0.1); padding: 10px; border-radius: 12px; flex: 1; text-align: center; border: 1px solid rgba(255, 152, 0, 0.3); }
-        .stat-number { display: block; font-size: 1.2rem; font-weight: bold; color: #ff9800; }
-        .stat-label { font-size: 0.7rem; color: #ff9800; text-transform: uppercase; }
+body { 
+    font-family: 'Segoe UI', sans-serif; 
+    background: var(--bg-body); 
+    margin: 0; 
+    padding: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    transition: 0.3s; /* Transición suave al cambiar entre temas */
+}
 
-        .progreso-container { background: var(--border); border-radius: 10px; height: 10px; margin-bottom: 20px; overflow: hidden; }
-        #barra-progreso { background: #28a745; width: 0%; height: 100%; transition: width 0.4s ease; }
-        
-        .input-group { display: flex; gap: 10px; margin-bottom: 25px; }
-        .input-group input { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg-card); color: var(--text-main); outline: none; }
-        .btn-add { background: #28a745; color: white; border: none; border-radius: 10px; padding: 0 15px; font-weight: bold; cursor: pointer; }
+/* Contenedor principal de la App */
+.card { 
+    background: var(--bg-card); 
+    padding: 25px; 
+    border-radius: 20px; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+    width: 100%; 
+    max-width: 400px; 
+    position: relative; 
+    margin-bottom: 20px; 
+    box-sizing: border-box; /* Asegura que el padding no afecte al ancho total */
+}
 
-        .tarea { display: flex; flex-direction: column; margin-bottom: 12px; background: var(--bg-tarea); padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
-        .tarea-header { display: flex; align-items: center; }
-        input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; accent-color: #28a745; cursor: pointer; }
-        .texto-tarea { flex: 1; color: var(--text-main); }
-        .completada .texto-tarea { text-decoration: line-through; color: var(--text-sec); opacity: 0.6; }
+/* Títulos y textos de cabecera */
+h1 { color: var(--text-main); font-size: 1.4rem; margin: 0; }
+#fecha { color: var(--text-sec); font-size: 0.9rem; display: block; margin-bottom: 5px; }
+#frase-motivadora { 
+    font-style: italic; 
+    font-size: 0.85rem; 
+    color: #28a745; 
+    margin-bottom: 20px; 
+    display: block; 
+    min-height: 1.2rem; 
+}
 
-        .input-detalle { margin-top: 10px; margin-left: 37px; padding: 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); font-size: 0.8rem; outline: none; }
+/* Botón flotante para el Modo Oscuro */
+.btn-dark-mode { 
+    position: absolute; 
+    top: 20px; 
+    right: 20px; 
+    background: none; 
+    border: none; 
+    font-size: 1.2rem; 
+    cursor: pointer; 
+}
 
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px; }
-        .calendar-day { aspect-ratio: 1; border-radius: 8px; background: var(--border); font-size: 0.7rem; display: flex; align-items: center; justify-content: center; color: var(--text-sec); cursor: pointer; transition: 0.2s; }
-        .day-perfect { background: #28a745 !important; color: white; }
-        .day-partial { background: #94d3a2 !important; color: #1a1a1a; }
+/* ==========================================================================
+   WIDGETS Y ESTADÍSTICAS
+   ========================================================================== */
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-        .modal-content { background: var(--bg-card); padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; }
-        .modal-item { padding: 10px 0; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; color: var(--text-main); }
+/* Contenedor de las cajas de racha y total */
+.stats { display: flex; gap: 10px; margin-bottom: 20px; }
+.stat-box { 
+    background: rgba(255, 152, 0, 0.1); /* Naranja muy suave */
+    padding: 10px; 
+    border-radius: 12px; 
+    flex: 1; 
+    text-align: center; 
+    border: 1px solid rgba(255, 152, 0, 0.3); 
+}
+.stat-number { display: block; font-size: 1.2rem; font-weight: bold; color: #ff9800; }
+.stat-label { font-size: 0.7rem; color: #ff9800; text-transform: uppercase; }
 
-        .btn-reiniciar { background: #ff4757; margin-top: 20px; width: 100%; padding: 12px; color: white; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; opacity: 0.7; }
-        footer { margin-top: 30px; text-align: center; font-size: 0.8rem; color: var(--text-sec); opacity: 0.7; }
+/* Barra de progreso visual */
+.progreso-container { 
+    background: var(--border); 
+    border-radius: 10px; 
+    height: 10px; 
+    margin-bottom: 20px; 
+    overflow: hidden; 
+}
+#barra-progreso { 
+    background: #28a745; 
+    width: 0%; 
+    height: 100%; 
+    transition: width 0.4s ease; /* Animación de llenado fluido */
+}
+
+/* ==========================================================================
+   GESTIÓN DE TAREAS (HÁBITOS)
+   ========================================================================== */
+
+/* Grupo de entrada (Input + Botón añadir) */
+.input-group { display: flex; gap: 10px; margin-bottom: 25px; }
+.input-group input { 
+    flex: 1; 
+    padding: 12px; 
+    border-radius: 10px; 
+    border: 2px solid var(--border); 
+    background: var(--bg-card); 
+    color: var(--text-main); 
+    outline: none; 
+}
+.btn-add { 
+    background: #28a745; 
+    color: white; 
+    border: none; 
+    border-radius: 10px; 
+    padding: 0 15px; 
+    font-weight: bold; 
+    cursor: pointer; 
+}
+
+/* Estilo de cada fila de hábito */
+.tarea { 
+    display: flex; 
+    flex-direction: column; 
+    margin-bottom: 12px; 
+    background: var(--bg-tarea); 
+    padding: 12px; 
+    border-radius: 12px; 
+    border: 1px solid var(--border); 
+}
+.tarea-header { display: flex; align-items: center; }
+
+/* Checkbox personalizado */
+input[type="checkbox"] { 
+    width: 22px; 
+    height: 22px; 
+    margin-right: 15px; 
+    accent-color: #28a745; /* Color verde del check */
+    cursor: pointer; 
+}
+.texto-tarea { flex: 1; color: var(--text-main); }
+
+/* Estilo para cuando una tarea se marca como completada */
+.completada .texto-tarea { 
+    text-decoration: line-through; 
+    color: var(--text-sec); 
+    opacity: 0.6; 
+}
+
+/* Input extra que aparece en "Ejercicio" */
+.input-detalle { 
+    margin-top: 10px; 
+    margin-left: 37px; 
+    padding: 8px; 
+    border-radius: 8px; 
+    border: 1px solid var(--border); 
+    background: var(--bg-body); 
+    color: var(--text-main); 
+    font-size: 0.8rem; 
+    outline: none; 
+}
+
+/* ==========================================================================
+   CALENDARIO DE CONSISTENCIA (Heatmap)
+   ========================================================================== */
+
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 15px; }
+.calendar-day { 
+    aspect-ratio: 1; /* Mantiene los días siempre cuadrados */
+    border-radius: 8px; 
+    background: var(--border); 
+    font-size: 0.7rem; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: var(--text-sec); 
+    cursor: pointer; 
+    transition: 0.2s; 
+}
+
+/* Estados del calendario */
+.day-perfect { background: #28a745 !important; color: white; } /* Todos los hábitos hechos */
+.day-partial { background: #94d3a2 !important; color: #1a1a1a; } /* Algunos hábitos hechos */
+
+/* ==========================================================================
+   MODAL Y FOOTER
+   ========================================================================== */
+
+/* Fondo del Modal (oculto por defecto) */
+.modal { 
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; width: 100%; height: 100%; 
+    background: var(--modal-bg); 
+    z-index: 1000; 
+    align-items: center; 
+    justify-content: center; 
+    backdrop-filter: blur(4px); /* Efecto cristal esmerilado */
+}
+.modal-content { 
+    background: var(--bg-card); 
+    padding: 25px; 
+    border-radius: 20px; 
+    width: 85%; 
+    max-width: 350px; 
+}
+.modal-item { 
+    padding: 10px 0; 
+    border-bottom: 1px solid var(--border); 
+    display: flex; 
+    flex-direction: column; 
+    color: var(--text-main); 
+}
+
+/* Botón crítico de reinicio */
+.btn-reiniciar { 
+    background: #ff4757; 
+    margin-top: 20px; 
+    width: 100%; 
+    padding: 12px; 
+    color: white; 
+    border-radius: 12px; 
+    border: none; 
+    font-weight: bold; 
+    cursor: pointer; 
+    opacity: 0.7; 
+}
+.btn-reiniciar:hover { opacity: 1; }
+
+footer { 
+    margin-top: 30px; 
+    text-align: center; 
+    font-size: 0.8rem; 
+    color: var(--text-sec); 
+    opacity: 0.7; 
+}
