@@ -27,8 +27,4 @@
 * **Canvas Confetti:** Integración de librería externa para mejorar la gamificación.
 * **Open Graph Meta Tags:** Optimizado para compartir en LinkedIn y redes sociales.
 
-## 📸 Vista Previa
 
-| Modo Claro | Modo Oscuro |
-|---|---|
-| ![Light Mode](https://via.placeholder.com/300x500?text=Preview+Light+Mode) | ![Dark Mode](https://via.placeholder.com/300x500?text=Preview+Dark+Mode) |
