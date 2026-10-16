@@ -15,7 +15,7 @@ const frases = [
 
 // 2. TAREAS INICIALES (Si el usuario es nuevo, cargamos estas)
 // Usamos JSON.parse para convertir el texto de LocalStorage en un Array de JS
-let misHabitos = JSON.parse(localStorage.getItem('misHabitosLista')) || ["Lectura 📚", "Ejercicio 🏋️", "Aprender Inglés", "Programar 💻"];
+let misHabitos = JSON.parse(localStorage.getItem('misHabitosLista')) || ["Lectura 📚", "Ejercicio 🏋️", "Aprender Inglés 🇬🇧", "Programar 💻", "Caminata 🌳", "Mecanografiar 🖊 ️"];
 
 /**
  * Genera una frase aleatoria del array y la inyecta en el HTML
